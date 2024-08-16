@@ -60,13 +60,19 @@ void dfs(int x, int y, int cluster) {
 		return ;
 	cave[y][x].visited = true;
 	cave[y][x].cluster = cluster;
-	maxY = max(maxY, y);
 	for (int i=0; i<4; i++)
 		dfs(x+dx[i], y+dy[i], cluster);
 }
 
 void drop(int cluster) {
 	int minY = INT_MAX;
+	for (int i=0; i<r; i++) {
+		for (int j=0; j<c; j++) {
+			if (cave[i][j].val == 'x' && cave[i][j].cluster == cluster) {
+				for (int k=0; )
+			}
+		}
+	}
 	for (int i=0; i<c; i++) {
 		if (cave[y][i].val == 'x' && cave[y][i].cluster == cluster) {
 			for (int j=y+1; j<=r; j++) {
