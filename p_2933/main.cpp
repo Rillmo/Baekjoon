@@ -65,32 +65,37 @@ void dfs(int x, int y, int cluster) {
 }
 
 void drop(int cluster) {
+	cout << "dropCAlled: " << cluster << endl;
 	int minY = INT_MAX;
-	for (int i=0; i<r; i++) {
+	for (int i=0; i<r-1; i++) {
 		for (int j=0; j<c; j++) {
-			if (cave[i][j].val == 'x' && cave[i][j].cluster == cluster) {
-				for (int k=0; )
-			}
-		}
-	}
-	for (int i=0; i<c; i++) {
-		if (cave[y][i].val == 'x' && cave[y][i].cluster == cluster) {
-			for (int j=y+1; j<=r; j++) {
-				if (cave[j][i].val == 'x' || j == r) {
-					minY = min(minY, j-y-1);
-					break;
+			if (cave[i][j].val == 'x' && cave[i][j].cluster == cluster \
+				&& cave[i+1][j].val != 'x') {
+				cout << i << "," << j << endl;
+				for (int k=i+1; k<r; k++) {
+					cout << "down: " << k << "," << j << " ";
+					if (cave[k][j].val == 'x') {
+						minY = min(minY, r-k-1);
+						break;
+					}
 				}
+				cout << "\nminY: " << minY << endl;
 			}
 		}
 	}
-	for (int i=r-1; i>=0; i--) {
-		for (int j=c-1; j>=0; j--) {
+
+	if (minY == INT_MAX)	return ;
+	for (int i=r-2; i>=0; i--) {
+		cout << "wtf: " <<i << endl;
+		for (int j=0; j<c; j++) {
 			if (cave[i][j].cluster == cluster) {
+				cout << "drop: " <<  i << "," << j << ",minY: " << minY << " ";
 				cave[i+minY][j].val = cave[i][j].val;
 				cave[i][j].val = '.';
 				cave[i][j].cluster = 0;
 			}
 		}
+		cout << endl;
 	}
 }
 
@@ -122,6 +127,7 @@ int main() {
 			}
 		}
 		throwStick(i);
+		printer(1);
 		int cluster = 1;
 		for (int j=0; j<r; j++) {
 			for (int k=0; k<c; k++) {	// O(rc) = max 10000
@@ -131,9 +137,11 @@ int main() {
 				}
 			}
 		}
-		for (int j=1; j<=cluster; j++)
-				drop(j);
+		printer(2);
+		for (int j=1; j< cluster; j++) {
+			// printer(2);
+			drop(j);
+			printer(1);
 		}
 	}
-	printer(1);
 }
