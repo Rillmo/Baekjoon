@@ -23,6 +23,7 @@ node cave[101][101];
 int cmd[101];
 int dx[4] = { -1, 1, 0, 0 };
 int dy[4] = { 0, 0, -1, 1 };
+int floorr;
 
 
 void printer(int type) {
@@ -60,42 +61,35 @@ void dfs(int x, int y, int cluster) {
 		return ;
 	cave[y][x].visited = true;
 	cave[y][x].cluster = cluster;
+	floorr = max(floorr, y);
 	for (int i=0; i<4; i++)
 		dfs(x+dx[i], y+dy[i], cluster);
 }
 
 void drop(int cluster) {
-	cout << "dropCAlled: " << cluster << endl;
 	int minY = INT_MAX;
-	for (int i=0; i<r-1; i++) {
-		for (int j=0; j<c; j++) {
-			if (cave[i][j].val == 'x' && cave[i][j].cluster == cluster \
-				&& cave[i+1][j].val != 'x') {
-				cout << i << "," << j << endl;
-				for (int k=i+1; k<r; k++) {
-					cout << "down: " << k << "," << j << " ";
-					if (cave[k][j].val == 'x') {
-						minY = min(minY, r-k-1);
-						break;
-					}
-				}
-				cout << "\nminY: " << minY << endl;
-			}
+	for (int i=0; i<c; i++) {
+		int j=r-1;
+		int dist = 0;
+		while (j > 0 && cave[j][i].cluster != cluster) j--;
+		if (j == 0)	continue;
+		++j;
+		while (j < r && cave[j][i].val == '.') {
+			j++;
+			dist++;
 		}
+		minY = min(dist, minY);
 	}
 
 	if (minY == INT_MAX)	return ;
 	for (int i=r-2; i>=0; i--) {
-		cout << "wtf: " <<i << endl;
 		for (int j=0; j<c; j++) {
 			if (cave[i][j].cluster == cluster) {
-				cout << "drop: " <<  i << "," << j << ",minY: " << minY << " ";
 				cave[i+minY][j].val = cave[i][j].val;
 				cave[i][j].val = '.';
 				cave[i][j].cluster = 0;
 			}
 		}
-		cout << endl;
 	}
 }
 
@@ -127,21 +121,20 @@ int main() {
 			}
 		}
 		throwStick(i);
-		printer(1);
 		int cluster = 1;
+		int aerial = 0;
 		for (int j=0; j<r; j++) {
 			for (int k=0; k<c; k++) {	// O(rc) = max 10000
 				if (cave[j][k].val == 'x' && cave[j][k].cluster == 0) {
+					floorr = -1;
 					dfs(k, j, cluster);
+					if (floorr != r-1)	aerial = cluster;
 					cluster++;
 				}
 			}
 		}
-		printer(2);
-		for (int j=1; j< cluster; j++) {
-			// printer(2);
-			drop(j);
-			printer(1);
-		}
+		if (aerial != 0)
+			drop(aerial);
 	}
+	printer(1);
 }
