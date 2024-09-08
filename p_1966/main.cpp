@@ -2,31 +2,48 @@
 #include <queue>
 using namespace std;
 
-int t, n, m;
-queue<Data> q;
-Data input;
-
-class Data {
-	public:
-		int idx;
-		int priority;
+struct Data {
+	int val;
+	bool ans;
 };
 
-void	simulate() {
-	
+int test, n, m;
+
+int simulate(queue<Data>& que, priority_queue<int>& pque) {
+	int count = 0;
+	int ret;
+	while (!pque.empty()) {
+		int maxi = pque.top();
+		pque.pop();
+		Data tmp;
+		do {
+			tmp = que.front();
+			que.pop();
+			que.push(tmp);
+		} while (maxi != tmp.val);
+		count++;
+		// cout << "test: (" <<  tmp.val << "," << tmp.ans << ") " << "count: " << count << endl;
+		if (tmp.ans) ret = count;
+	}
+	return ret;
 }
 
 int main() {
-	cin >> t;
-	for (int i=0; i<t; i++) {
-		cin >> n;
-		cin >> m;
-		for (int j=0; j<n; j++) {
-			input = new Data();
-			cin >> input.priority;
-			input.idx = j;
-			q.push(input);
+	cin >> test;
+	for (int t=0; t<test; t++) {
+		cin >> n >> m;
+		int tmp;
+		queue<Data> que;
+		priority_queue<int> pque;
+		// cout << "_______" << endl;
+		for (int i=0; i<n; i++) {
+			cin >> tmp;
+			if (i == m)
+				que.push({tmp, true});
+			else
+				que.push({tmp, false});
+			pque.push(tmp);
 		}
-		
+		cout << simulate(que, pque) << '\n';
 	}
 }
